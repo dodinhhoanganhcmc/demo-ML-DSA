@@ -1,0 +1,23 @@
+# ML-DSA Signature Demo
+
+> A live demonstrator of ML-DSA post-quantum digital signatures (NIST FIPS 204).
+> Generate key pairs, sign and verify text or files, and read sizes and timings
+> measured at runtime. Runs locally: Next.js frontend + FastAPI backend.
+
+## Pages
+
+- [Home](/): interactive keygen / sign / verify tool for ML-DSA-44, ML-DSA-65 and ML-DSA-87, plus a measured comparison against Ed25519 and RSA-2048.
+- [About](/about): what the demo proves, how it is built, and which libraries implement the cryptography.
+- [Privacy](/privacy): this demo stores nothing.
+
+## Key facts
+
+- Standard: NIST FIPS 204 (Module-Lattice-Based Digital Signature Standard), published 2024-08-13.
+- Algorithm: pure ML-DSA, hedged variant, empty context.
+- Signature sizes (FIPS 204 Table 2): ML-DSA-44 = 2420 B, ML-DSA-65 = 3309 B, ML-DSA-87 = 4627 B.
+- Cryptography: pqcrypto 1.0.0 (ML-DSA), cryptography 50.0.2 (Ed25519, RSA-2048). No hand-rolled crypto.
+
+## API (local backend, http://127.0.0.1:8000)
+
+- GET /api/health, GET /api/params
+- POST /api/keys, POST /api/signatures, POST /api/verifications, POST /api/benchmarks

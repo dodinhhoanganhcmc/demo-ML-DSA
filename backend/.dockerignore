@@ -1,0 +1,9 @@
+# Keep the build context minimal — tests and caches never enter the image.
+tests/
+__pycache__/
+.pytest_cache__/
+.venv/
+venv/
+*.pyc
+Dockerfile
+.dockerignore

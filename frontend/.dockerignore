@@ -1,0 +1,8 @@
+# Build context excludes — nothing that is only needed locally.
+node_modules/
+.next/
+test-results/
+playwright-report/
+.git/
+*.tsbuildinfo
+next-env.d.ts

@@ -1,0 +1,21 @@
+# ML-DSA Signature Demo — two services, no database by design (stateless API).
+#
+#   docker compose up --build
+#   → frontend: http://localhost:3000  (open this origin — CORS allow-list)
+#   → backend : http://127.0.0.1:8000  (the browser calls it directly)
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped

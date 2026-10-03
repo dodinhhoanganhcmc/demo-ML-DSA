@@ -1,0 +1,7 @@
+fastapi==0.142.2
+starlette==1.7.0
+uvicorn==0.35.0
+pqcrypto==1.0.0
+cryptography==50.0.2
+pytest==9.0.3
+httpx==0.28.1

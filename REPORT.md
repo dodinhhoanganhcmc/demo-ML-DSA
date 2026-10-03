@@ -198,6 +198,12 @@ machine, so "CD" here means: every push is packaged into a runnable
 executed locally before the workflow was written; their outputs are the ones
 quoted in §5 and §7.
 
+**Live run evidence:** the first GitHub Actions run on the pushed repository
+(`37092579625`, 2026-10-03) finished green on all four jobs — backend
+`42 passed` in 19 s, frontend vitest + production build in 41 s,
+`docker compose build` in 50 s, and the Playwright suite (7/7) against a
+freshly started stack in 1 m 30 s.
+
 ## 7 · Docker (rubric 4)
 
 ```bash

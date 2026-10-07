@@ -1,12 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  async rewrites() {
-    return [{
-      source: "/api/:path*",
-      destination: `${process.env.API_INTERNAL_URL ?? "http://127.0.0.1:8000"}/api/:path*`,
-    }];
-  },
   // The Content-Security-Policy (per-request nonce) is set in src/proxy.ts.
   // Only static, request-independent headers live here.
   async headers() {

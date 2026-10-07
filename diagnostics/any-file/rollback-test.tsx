@@ -306,9 +306,6 @@ export function Demo() {
     setError(null);
     try {
       const buffer = new Uint8Array(await next.arrayBuffer());
-      setMode("file");
-      setOpened(null);
-      setSig(null);
       setFile({
         name: next.name,
         type: next.type || "application/octet-stream",
@@ -616,12 +613,12 @@ export function Demo() {
                     spellCheck={false}
                   />
                 </div>
-              ) : null}
+              ) : (
                 <div className="field">
                   <div className="field__label-row">
-                    <label className="label" htmlFor="file-input">Choose any file to sign</label>
-                    <span className="field__count" data-testid="file-bytes">
-                      {file?.bytes ?? 0} B
+                    <span className="label">File to sign</span>
+                    <span className="field__count" data-testid="message-bytes">
+                      {messageBytes} B
                     </span>
                   </div>
                   <div className="file">
@@ -634,10 +631,11 @@ export function Demo() {
                     <span className="file__name">
                       {file
                         ? `${file.name} · ${formatBytes(file.bytes)} · sent as base64, signed as raw bytes`
-                        : `PDF, images, Office documents, ZIP, or any other file · limit ${formatBytes(MAX_MESSAGE_BYTES)}`}
+                        : `no file chosen · limit ${formatBytes(MAX_MESSAGE_BYTES)}`}
                     </span>
                   </div>
                 </div>
+              )}
 
               {overLimit ? (
                 <p className="alert" role="alert">
@@ -663,7 +661,7 @@ export function Demo() {
                   disabled={!canSign || busy !== null}
                   data-testid="sign"
                 >
-                  {busy === "sign" ? "Signing…" : mode === "file" ? "Sign selected file" : "Sign message"}
+                  {busy === "sign" ? "Signing…" : "Sign message"}
                 </button>
                 <button
                   type="button"
@@ -745,7 +743,7 @@ export function Demo() {
               </div>
 
               <div className="drills">
-                <h3 className="drills__title">Verify an existing signed package (.ml-dsa)</h3>
+                <h3 className="drills__title">Signed file interchange</h3>
                 <p className="drills__hint">
                   Sign a file above, download the .ml-dsa container it produces,
                   then open that container here to verify it and pull the

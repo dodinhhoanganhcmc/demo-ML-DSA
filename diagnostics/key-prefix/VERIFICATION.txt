@@ -1,0 +1,13 @@
+Changed: Specimen public-key prefix copy button; first 64 decoded bytes as 128 hex characters; manual selection on HTTP/clipboard failure. Complete public key remains used for verification.
+ORIGINAL SHA256: 5ABBB7DBE643F9B872C20F09CC83B8863536701F0DE8FE758A3FC59091D2E433
+BASELINE command (cwd M:\ML-DSA\frontend): npx vitest run --reporter=dot
+Input: original source and existing suite. Literal result: Test Files 3 passed (3); Tests 40 passed (40). Exit 0.
+MODIFIED command (same cwd): npx vitest run --reporter=dot
+Input: changed source and prefix tests. Literal result: Test Files 4 passed (4); Tests 44 passed (44). Exit 0.
+Additional commands: npx tsc --noEmit; npx eslint src/components/Specimen.tsx src/components/Specimen.test.tsx. Output: empty; exit 0.
+ROLLBACK command: "C:\Program Files\Git\bin\bash.exe" /m/ML-DSA/diagnostics/key-prefix/ROLLBACK.sh /m/ML-DSA/diagnostics/key-prefix/rollback-test.tsx
+Input: independent copy of modified source. Literal output: ROLLBACK_MATCH=True; exit 0. Restored original source byte-for-byte and SHA256 matched. Live source remains modified.
+MODIFIED_FILE: M:\ML-DSA\diagnostics\key-prefix\MODIFIED_FILE.tsx
+DIFF_FILE: M:\ML-DSA\diagnostics\key-prefix\DIFF_FILE.diff
+VERIFICATION: M:\ML-DSA\diagnostics\key-prefix\VERIFICATION.txt
+ROLLBACK: M:\ML-DSA\diagnostics\key-prefix\ROLLBACK.sh

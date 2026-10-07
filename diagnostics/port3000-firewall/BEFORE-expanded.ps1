@@ -1,0 +1,3 @@
+$ErrorActionPreference = 'Stop'
+New-NetFirewallRule -Name 'MLDSA-Docker-TCP3000' -DisplayName 'ML-DSA Docker TCP 3000 LAN' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 3000 -Program 'C:\Program Files\Docker\Docker\resources\com.docker.backend.exe' -InterfaceAlias 'Ethernet 6' -Profile Private | Out-Null
+Write-Output 'RULE_PRESENT=True; Action=Allow; Protocol=TCP; LocalPort=3000; Profile=Private; Interface=Ethernet 6'

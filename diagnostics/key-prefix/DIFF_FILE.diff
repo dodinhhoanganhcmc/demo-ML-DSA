@@ -1,0 +1,57 @@
+diff --git a/frontend/src/components/Specimen.tsx b/frontend/src/components/Specimen.tsx
+index 2be6e7c..4d4da33 100644
+--- a/frontend/src/components/Specimen.tsx
++++ b/frontend/src/components/Specimen.tsx
+@@ -1,3 +1,6 @@
++"use client";
++
++import { useRef, useState } from "react";
+ import { b64ToBytes, toHex } from "@/lib/bytes";
+ 
+ const HEX_WINDOW = 96; // bytes shown per specimen plate
+@@ -13,6 +16,21 @@ export function Specimen({
+ }) {
+   const pk = publicKey ? b64ToBytes(publicKey) : undefined;
+   const sig = signature ? b64ToBytes(signature) : undefined;
++  const prefix = pk && pk.length >= 64 ? toHex(pk, 64).replaceAll(" ", "") : "";
++  const prefixInput = useRef<HTMLTextAreaElement>(null);
++  const [copyResult, setCopyResult] = useState<{ value: string; message: string } | null>(null);
++
++  async function copyPrefix() {
++    if (!prefix) return;
++    try {
++      await navigator.clipboard.writeText(prefix);
++      setCopyResult({ value: prefix, message: "Copied 64 bytes (128 hex characters)." });
++    } catch {
++      prefixInput.current?.focus();
++      prefixInput.current?.select();
++      setCopyResult({ value: prefix, message: "Select and copy the hex below with Ctrl+C (or long-press on mobile)." });
++    }
++  }
+ 
+   return (
+     <section className="specimen" id="specimen" aria-label="Key and signature specimen">
+@@ -35,6 +53,23 @@ export function Specimen({
+             <p className="hex__body">
+               {pk ? toHex(pk, HEX_WINDOW) : "— generate a key pair —"}
+             </p>
++            <button type="button" className="btn btn--line" disabled={!prefix} onClick={copyPrefix}>
++              Copy first 64 bytes of public key
++            </button>
++            {prefix && (
++              <textarea
++                ref={prefixInput}
++                aria-label="Public key first 64 bytes (hex)"
++                className="hex__body"
++                readOnly
++                value={prefix}
++                rows={4}
++                spellCheck={false}
++                style={{ width: "100%", resize: "vertical" }}
++              />
++            )}
++            <p className="field-bars__caption">Hex prefix for comparison only. Signature verification uses the complete public key.</p>
++            <p role="status">{copyResult?.value === prefix ? copyResult.message : ""}</p>
+           </div>
+ 
+           <div className="hex">

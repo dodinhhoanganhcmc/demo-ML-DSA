@@ -6,7 +6,6 @@ WORKDIR /app
 # Playwright's postinstall would download browsers we never use in the image.
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV API_INTERNAL_URL=http://backend:8000
 
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -19,7 +18,6 @@ FROM node:24-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production \
-    API_INTERNAL_URL=http://backend:8000 \
     NEXT_TELEMETRY_DISABLED=1 \
     HOSTNAME=0.0.0.0 \
     PORT=3000

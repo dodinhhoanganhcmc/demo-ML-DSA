@@ -7,7 +7,7 @@
  * the DOM flows, and the download plumbing (URL.createObjectURL + <a download>
  * are captured, not faked away).
  */
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Demo } from "./Demo";
@@ -112,7 +112,8 @@ function installBackend(backend: FakeBackend) {
           backend.keyCounter += 1;
           // valid base64: Specimen decodes keys during render, exactly as in
           // production where the real API always returns valid base64
-          backend.currentPk = btoa(`public-key-${backend.keyCounter}`);
+          const size = paramsFixture.param_sets.find((p) => p.name === body.param_set)!.standard_reference.public_key_bytes;
+          backend.currentPk = btoa(String.fromCharCode(...new Uint8Array(size).fill(backend.keyCounter)));
           return respond({
             param_set: body.param_set,
             public_key: backend.currentPk,
@@ -206,6 +207,44 @@ async function startSignedSession(
 }
 
 describe("Demo — core signing flow", () => {
+  it("uses an accepted custom key for verification and rejects a prefix before acceptance", async () => {
+    const user = userEvent.setup();
+    render(<Demo />);
+    await startSignedSession(user);
+    const original = backend.currentPk;
+    const input = screen.getByLabelText("Enter complete public key");
+    fireEvent.change(input, { target: { value: btoa("prefix-only") } });
+    await user.click(screen.getByText("Validate and use key"));
+    expect(screen.getByLabelText("Active public key (Base64)")).toHaveValue(original);
+    const other = btoa(String.fromCharCode(...new Uint8Array(1952).fill(99)));
+    fireEvent.change(input, { target: { value: other } });
+    await user.click(screen.getByText("Validate and use key"));
+    await user.click(screen.getByTestId("verify"));
+    await waitFor(() => expect(verdict("invalid")).not.toBeNull());
+    fireEvent.change(input, { target: { value: original } });
+    await user.click(screen.getByText("Validate and use key"));
+    expect(verdict("invalid")).toBeNull();
+    await user.click(screen.getByTestId("verify"));
+    await waitFor(() => expect(verdict("valid")).not.toBeNull());
+    await user.click(screen.getByTestId("line-ML-DSA-44"));
+    expect(screen.getByLabelText("Active public key (Base64)")).toHaveValue("");
+  });
+  it.each(["report.pdf", "photo.png", "document.docx", "archive.zip", "unknown.custom"])("signs any file directly from the initial screen: %s", async (name) => {
+    const user = userEvent.setup();
+    render(<Demo />);
+    await screen.findByText("API online");
+    const input = screen.getByLabelText("Choose a file to sign");
+    expect(input).not.toHaveAttribute("accept");
+    await user.upload(input, new File([new Uint8Array([0, 255, 128, 42])], name));
+    await user.click(screen.getByTestId("keygen"));
+    await user.click(screen.getByTestId("sign"));
+    await user.click(screen.getByTestId("verify"));
+    await waitFor(() => expect(verdict("valid")).not.toBeNull());
+    await user.click(screen.getByTestId("download-signed"));
+    const content = decodeBundle(await blobBytes(createdBlobs.at(-1)!));
+    expect(content.name).toBe(name);
+    expect(Array.from(content.message)).toEqual([0, 255, 128, 42]);
+  });
   it("boots online with the parameter reference loaded", async () => {
     render(<Demo />);
     expect(await screen.findByText("API online")).toBeInTheDocument();

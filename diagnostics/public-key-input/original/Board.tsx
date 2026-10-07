@@ -1,6 +1,6 @@
 export interface BoardProps {
   lineName: string;
-  keySource: "yours" | "fresh" | "file" | "custom";
+  keySource: "yours" | "fresh" | "file";
   sessionStamp: string;
   measured?: { publicKeyBytes: number; secretKeyBytes: number };
   reference?: { publicKeyBytes: number; secretKeyBytes: number; signatureBytes: number };
@@ -100,8 +100,7 @@ export function Board({
           <span className="board__key">Public key used</span>
           <span className="board__value">
             {keySource === "yours"
-              ? "random session key pair"
-              : keySource === "custom" ? "selected verification key"
+              ? "your key pair"
               : keySource === "file"
                 ? "key embedded in the file"
                 : "fresh key pair"}

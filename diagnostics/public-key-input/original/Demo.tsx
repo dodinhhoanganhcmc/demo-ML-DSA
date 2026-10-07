@@ -31,7 +31,6 @@ import { Board } from "./Board";
 import { Compare } from "./Compare";
 import { RouteStrip, type Station } from "./RouteStrip";
 import { Specimen } from "./Specimen";
-import { PublicKeyInput } from "./PublicKeyInput";
 
 const LINES: { id: ParamSet; color: string }[] = [
   { id: "ML-DSA-44", color: "var(--line-44)" },
@@ -89,7 +88,6 @@ export function Demo() {
   const [sig, setSig] = useState<SignResponse | null>(null);
   const [result, setResult] = useState<VerifyResponse | null>(null);
   const [usedFreshKey, setUsedFreshKey] = useState(false);
-  const [customPublicKey, setCustomPublicKey] = useState<string | null>(null);
 
   // drill backups (so a demo can be replayed)
   const [msgBackup, setMsgBackup] = useState<Backup>(null);
@@ -136,7 +134,6 @@ export function Demo() {
   }, []);
 
   function resetRoute() {
-    setCustomPublicKey(null);
     setKeys(null);
     setFreshKeys(null);
     setSig(null);
@@ -162,7 +159,6 @@ export function Demo() {
     try {
       const next = await api.keygen(line);
       setKeys(next);
-      setCustomPublicKey(null);
       setFreshKeys(null);
       setSig(null);
       setResult(null);
@@ -205,7 +201,7 @@ export function Demo() {
     setBusy("verify");
     setError(null);
     try {
-      const publicKey = withFreshKey && freshKeys ? freshKeys.public_key : customPublicKey ?? keys.public_key;
+      const publicKey = withFreshKey && freshKeys ? freshKeys.public_key : keys.public_key;
       const checked = await api.verify(
         line,
         publicKey,
@@ -306,9 +302,6 @@ export function Demo() {
     setError(null);
     try {
       const buffer = new Uint8Array(await next.arrayBuffer());
-      setMode("file");
-      setOpened(null);
-      setSig(null);
       setFile({
         name: next.name,
         type: next.type || "application/octet-stream",
@@ -427,7 +420,7 @@ export function Demo() {
     try {
       const checked = await api.verify(
         opened.paramSet,
-        customPublicKey ?? opened.publicKey,
+        opened.publicKey,
         opened.messageB64,
         opened.signature,
         "base64",
@@ -616,12 +609,12 @@ export function Demo() {
                     spellCheck={false}
                   />
                 </div>
-              ) : null}
+              ) : (
                 <div className="field">
                   <div className="field__label-row">
-                    <label className="label" htmlFor="file-input">Choose any file to sign</label>
-                    <span className="field__count" data-testid="file-bytes">
-                      {file?.bytes ?? 0} B
+                    <span className="label">File to sign</span>
+                    <span className="field__count" data-testid="message-bytes">
+                      {messageBytes} B
                     </span>
                   </div>
                   <div className="file">
@@ -634,10 +627,11 @@ export function Demo() {
                     <span className="file__name">
                       {file
                         ? `${file.name} · ${formatBytes(file.bytes)} · sent as base64, signed as raw bytes`
-                        : `PDF, images, Office documents, ZIP, or any other file · limit ${formatBytes(MAX_MESSAGE_BYTES)}`}
+                        : `no file chosen · limit ${formatBytes(MAX_MESSAGE_BYTES)}`}
                     </span>
                   </div>
                 </div>
+              )}
 
               {overLimit ? (
                 <p className="alert" role="alert">
@@ -663,7 +657,7 @@ export function Demo() {
                   disabled={!canSign || busy !== null}
                   data-testid="sign"
                 >
-                  {busy === "sign" ? "Signing…" : mode === "file" ? "Sign selected file" : "Sign message"}
+                  {busy === "sign" ? "Signing…" : "Sign message"}
                 </button>
                 <button
                   type="button"
@@ -680,13 +674,6 @@ export function Demo() {
                 </button>
               </div>
 
-              <PublicKeyInput
-                key={`${line}:${keys?.public_key ?? opened?.publicKey ?? "empty"}`}
-                line={line}
-                activeKey={customPublicKey ?? keys?.public_key ?? opened?.publicKey ?? ""}
-                disabled={busy !== null}
-                onAccept={(key) => { setCustomPublicKey(key); setResult(null); setUsedFreshKey(false); setNotice(null); }}
-              />
               <div className="drills">
                 <h3 className="drills__title">Tamper drills</h3>
                 <p className="drills__hint">
@@ -745,7 +732,7 @@ export function Demo() {
               </div>
 
               <div className="drills">
-                <h3 className="drills__title">Verify an existing signed package (.ml-dsa)</h3>
+                <h3 className="drills__title">Signed file interchange</h3>
                 <p className="drills__hint">
                   Sign a file above, download the .ml-dsa container it produces,
                   then open that container here to verify it and pull the
@@ -818,7 +805,7 @@ export function Demo() {
 
             <Board
               lineName={line}
-              keySource={usedFreshKey ? "fresh" : customPublicKey ? "custom" : opened ? "file" : "yours"}
+              keySource={opened ? "file" : usedFreshKey ? "fresh" : "yours"}
               sessionStamp={sessionStamp}
               measured={
                 keys
@@ -853,7 +840,7 @@ export function Demo() {
 
       {/* 5 · specimen -------------------------------------------------------- */}
       <Specimen
-        publicKey={usedFreshKey ? freshKeys?.public_key : customPublicKey ?? keys?.public_key ?? opened?.publicKey}
+        publicKey={keys?.public_key ?? opened?.publicKey}
         signature={sig?.signature ?? opened?.signature}
       />
 

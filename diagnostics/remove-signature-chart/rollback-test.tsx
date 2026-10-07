@@ -8,9 +8,11 @@ const HEX_WINDOW = 96; // bytes shown per specimen plate
 export function Specimen({
   publicKey,
   signature,
+  barCount = 512,
 }: {
   publicKey?: string;
   signature?: string;
+  barCount?: number;
 }) {
   const pk = publicKey ? b64ToBytes(publicKey) : undefined;
   const sig = signature ? b64ToBytes(signature) : undefined;
@@ -36,7 +38,9 @@ export function Specimen({
         <div className="specimen__head">
           <h2 className="section-title">Specimen</h2>
           <p className="lede specimen__lede">
-            Public key and signature bytes from this session, shown as hex.
+            The bytes themselves, rendered straight from this session. The bar
+            field is the signature read left to right — this page&rsquo;s only
+            texture is measured data.
           </p>
         </div>
 
@@ -75,6 +79,29 @@ export function Specimen({
             </span>
             <p className="hex__body">
               {sig ? toHex(sig, HEX_WINDOW) : "— sign a message —"}
+            </p>
+          </div>
+
+          <div className="field-bars">
+            <span className="hex__label">
+              Signature bytes · {sig ? `first ${Math.min(barCount, sig.length)}` : "none"} of{" "}
+              {sig?.length ?? 0} B
+            </span>
+            <div className="field-bars__plot" aria-hidden="true">
+              {sig
+                ? Array.from(sig.subarray(0, barCount)).map((b, i) => (
+                    <span
+                      key={i}
+                      className="field-bars__bar"
+                      style={{ height: `${6 + (b / 255) * 94}%` }}
+                    />
+                  ))
+                : null}
+            </div>
+            <p className="field-bars__caption">
+              {sig
+                ? "bar height = byte value 0x00–0xff"
+                : "waiting for a signature"}
             </p>
           </div>
         </div>

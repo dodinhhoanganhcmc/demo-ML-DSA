@@ -1,4 +1,4 @@
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
+const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
 
 export type ParamSet = "ML-DSA-44" | "ML-DSA-65" | "ML-DSA-87";
 export type Encoding = "utf8" | "base64";

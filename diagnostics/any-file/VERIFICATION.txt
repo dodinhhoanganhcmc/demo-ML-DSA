@@ -1,0 +1,13 @@
+Changed: Demo file chooser always visible; loading any extension selects file mode and resets old signature. Public key import: strict canonical Base64 or hex, parameter-specific byte length, random ML-DSA key generation, selected key used in message/file verification; complete active key displayed. Chart removed.
+BASELINE cwd M:\ML-DSA\frontend command npx vitest run --reporter=dot; input pre-any-file suite; output Test Files 7 passed (7), Tests 52 passed (52); exit 0.
+MODIFIED cwd M:\ML-DSA\frontend command npx vitest run --reporter=dot; input final suite; output Test Files 7 passed (7), Tests 58 passed (58); exit 0.
+npx tsc --noEmit; targeted eslint: no output, exit 0.
+ROLLBACK command: "C:\Program Files\Git\bin\bash.exe" /m/ML-DSA/diagnostics/any-file/ROLLBACK.sh /m/ML-DSA/diagnostics/any-file/rollback-test.tsx
+Input: copy of modified Demo.tsx; output ROLLBACK_MATCH=True; exit 0. Original source restored byte-for-byte on copy; live modified source preserved.
+Original SHA256 DCF93D83EA45ED083596C560FB52FF76F42E4C101E45689D62C5EBE780CB7B3B
+Paths:
+M:\ML-DSA\diagnostics\any-file\MODIFIED_FILE.tsx
+M:\ML-DSA\diagnostics\any-file\DIFF_FILE.diff
+M:\ML-DSA\diagnostics\any-file\VERIFICATION.txt
+M:\ML-DSA\diagnostics\any-file\ROLLBACK.sh
+Deployment: docker compose up -d --build --no-deps frontend, exit 0. Backend: .venv/Scripts/python.exe -m pytest backend/tests -q: 42 passed, 1 warning; exit 0. Live Playwright mobile 390x844: LIVE_SIGN_VERIFY=valid; CHART_COUNT=0; OVERFLOW=false; exit 0.

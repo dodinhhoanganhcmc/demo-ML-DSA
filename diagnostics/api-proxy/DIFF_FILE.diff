@@ -1,0 +1,47 @@
+diff --git a/frontend/Dockerfile b/frontend/Dockerfile
+index 3a00745..72a0b0b 100644
+--- a/frontend/Dockerfile
++++ b/frontend/Dockerfile
+@@ -6,6 +6,7 @@ WORKDIR /app
+ # Playwright's postinstall would download browsers we never use in the image.
+ ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ ENV NEXT_TELEMETRY_DISABLED=1
++ENV API_INTERNAL_URL=http://backend:8000
+ 
+ COPY package.json package-lock.json ./
+ RUN npm ci
+@@ -18,6 +19,7 @@ FROM node:24-alpine AS runner
+ WORKDIR /app
+ 
+ ENV NODE_ENV=production \
++    API_INTERNAL_URL=http://backend:8000 \
+     NEXT_TELEMETRY_DISABLED=1 \
+     HOSTNAME=0.0.0.0 \
+     PORT=3000
+diff --git a/frontend/next.config.ts b/frontend/next.config.ts
+index 15268cd..36fea4b 100644
+--- a/frontend/next.config.ts
++++ b/frontend/next.config.ts
+@@ -1,6 +1,12 @@
+ import type { NextConfig } from "next";
+ 
+ const nextConfig: NextConfig = {
++  async rewrites() {
++    return [{
++      source: "/api/:path*",
++      destination: `${process.env.API_INTERNAL_URL ?? "http://127.0.0.1:8000"}/api/:path*`,
++    }];
++  },
+   // The Content-Security-Policy (per-request nonce) is set in src/proxy.ts.
+   // Only static, request-independent headers live here.
+   async headers() {
+diff --git a/frontend/src/lib/api.ts b/frontend/src/lib/api.ts
+index f3fffca..bc320dc 100644
+--- a/frontend/src/lib/api.ts
++++ b/frontend/src/lib/api.ts
+@@ -1,4 +1,4 @@
+-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
++const BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
+ 
+ export type ParamSet = "ML-DSA-44" | "ML-DSA-65" | "ML-DSA-87";
+ export type Encoding = "utf8" | "base64";

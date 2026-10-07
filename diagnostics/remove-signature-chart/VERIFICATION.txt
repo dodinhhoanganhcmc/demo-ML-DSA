@@ -1,0 +1,14 @@
+Changed branch: Specimen signature visualization removed (field-bars JSX, barCount prop, chart description); signature hex and public key copy retained.
+Original SHA256: 149B9461EEA622158601A7FE72BD5F6F53A03664BB516F04593916B7962D3162
+BASELINE command: cd M:\ML-DSA\frontend; npx vitest run --reporter=dot
+Input: pre-change source and suite; literal output: Test Files 5 passed (5); Tests 45 passed (45); exit 0.
+MODIFIED command: cd M:\ML-DSA\frontend; npx vitest run --reporter=dot
+Input: modified source plus chart-removal regression test; literal output: Test Files 5 passed (5); Tests 46 passed (46); exit 0.
+TypeScript and targeted ESLint: no output; exit 0.
+ROLLBACK command: "C:\Program Files\Git\bin\bash.exe" /m/ML-DSA/diagnostics/remove-signature-chart/ROLLBACK.sh /m/ML-DSA/diagnostics/remove-signature-chart/rollback-test.tsx
+Input: modified source copy; literal output: ROLLBACK_MATCH=True; exit 0. Original chart source restored byte-for-byte on copy; active source remains modified.
+Paths:
+M:\ML-DSA\diagnostics\remove-signature-chart\MODIFIED_FILE.tsx
+M:\ML-DSA\diagnostics\remove-signature-chart\DIFF_FILE.diff
+M:\ML-DSA\diagnostics\remove-signature-chart\VERIFICATION.txt
+M:\ML-DSA\diagnostics\remove-signature-chart\ROLLBACK.sh

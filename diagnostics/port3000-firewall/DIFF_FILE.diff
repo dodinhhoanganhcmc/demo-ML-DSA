@@ -1,0 +1,1 @@
+Changed rule MLDSA-Docker-TCP3000 LocalPort: 3000 -> 3000,8000,8080,8317. Program, InterfaceAlias Ethernet 6, Profile Private remain unchanged. BEFORE-expanded.ps1 SHA256=1745FC8321ABD0B31B5B5C424354A21BD54295B5A84CA47B1B225C6E873FD18D
